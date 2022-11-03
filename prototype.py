@@ -170,7 +170,7 @@ class BackEnd(Functions):
                 self.clear_text()
             elif self.is_num(self.display_text[curr]):
                 self.allow_operator, self.allow_any, self.allow_constants = True, True, False
-            elif self.display_text[curr] in ops+'(':
+            elif self.display_text[curr] in ops+['(']:
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, True
             elif self.display_text[curr] in 'πe':
                 self.allow_operator, self.allow_any, self.allow_constants = True, False, False
