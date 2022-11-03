@@ -14,7 +14,7 @@ buttons = [
     ['ceil', 'floor', 'exp', '0', '00', '.', '=', False]
 ]
 
-ops = '+-**^//%'
+ops = '+ - * ** ^ / // %'.split()
 nums = '12345678900'
 funcs = 'asin sin acos cos atan tan fact log ln sqrt sqr abs ceil floor'.split()
 
@@ -43,6 +43,21 @@ class BackEnd(Functions):
             return True
         return False
 
+    @staticmethod
+    def dec_to_e(n):
+        b = int(n)
+        if len(str(b)) > 1:
+            c = n/(10**(len(str(b))-1))
+            return f"{c}E{len(str(b))-1}"
+        return n
+
+    def count_ops(self, l):
+        count = 0
+        for i in l:
+            if i in ops+funcs:
+                count += 1
+        return count
+
     def append_char_1c(self, *char):
         for i in char:
             a = len(self.display_text)
@@ -69,6 +84,8 @@ class BackEnd(Functions):
                 self.display_text.pop(len(self.display_text)+self.cursor-1)
 
     def send_press(self, button):
+        if button in ops+funcs and self.count_ops(self.display_text) > 14:
+            return 0
         if button in funcs:
             if not self.allow_operator and self.allow_any:
                 self.append_char_1c(button, '(', ')')
@@ -76,11 +93,11 @@ class BackEnd(Functions):
         elif button == 'pow':
             if self.allow_operator:
                 self.append_char_1c('^')
-            self.allow_operator, self.allow_any, self.allow_constants = False, True, True
+                self.allow_operator, self.allow_any, self.allow_constants = False, True, True
         elif button == 'exp':
-            if self.allow_operator:
-                self.append_char_1c('*', '10', '^')
-            self.allow_operator, self.allow_any, self.allow_constants = False, True, True
+            if self.allow_operator and self.display_text[len(self.display_text)+self.cursor-1]!='e':
+                self.append_char_1c('E')
+                self.allow_operator, self.allow_any, self.allow_constants = False, True, False
         elif button in ops:
             if self.allow_operator:
                 if button == "**":
@@ -121,8 +138,14 @@ class BackEnd(Functions):
                 self.allow_operator, self.allow_any, self.allow_constants = False, False, False
                 self.cursor = 0
             else:
-                self.allow_operator, self.allow_any, self.allow_constants = True, False, False
-                self.cursor = 0
+                if b >= 10**10000:
+                    self.display_text = ['Overflow']
+                    self.allow_any, self.allow_constants, self.allow_constants = False, False, False
+                else:
+                    if 10**45 <= b < 10**10000:
+                        self.display_text = [str(self.dec_to_e(b))]
+                    self.allow_operator, self.allow_any, self.allow_constants = True, False, False
+                    self.cursor = 0
         elif button == '.':
             if self.display_text and self.display_text[len(self.display_text)+self.cursor-1].isdecimal():
                 self.display_text[len(self.display_text)+self.cursor-1] += '.'
@@ -184,7 +207,6 @@ class App(BackEnd):
         # top frame widgets
         self.tf_buttons = Frame(self.top_frame)
         self.tf_copy_button = Button(self.tf_buttons)
-        self.tf_button2 = Button(self.tf_buttons)
         self.tf_confirm_text = Label(self.tf_buttons)
 
         self.tf_textbox = Label(self.top_frame)
@@ -227,7 +249,6 @@ class App(BackEnd):
         self.tf_buttons.rowconfigure(0, weight=1)
         self.tf_buttons.grid_propagate(False)
         self.tf_copy_button.grid(row=0, column=0, padx=4, sticky=NSEW)
-        self.tf_button2.grid(row=0, column=1, padx=4, sticky=NSEW)
 
         self.tf_textbox.grid(row=1, column=0, sticky=NSEW, padx=4, pady=4)
 
@@ -239,7 +260,6 @@ class App(BackEnd):
     def config_tf_widgets(self):
         self.tf_buttons.config(bg=App.light_grey, height=32)
         self.tf_copy_button.config(text="COPY", bg=App.dark_grey, activebackground=App.light_grey, fg="white", font=("Segoe UI", 13, 'bold'), borderwidth=3, command=lambda: copy_result())
-        self.tf_button2.config(text="TEST", bg="white", font=("Segoe UI", 13, 'bold'), borderwidth=3, command=lambda: print("test button pressed"))
         self.tf_confirm_text.config(text="Copied to Clipboard", bg=App.light_grey, fg="green", font=('Segoe UI', 10))
         self.tf_textbox.update()
         self.tf_textbox.config(
@@ -266,13 +286,13 @@ class App(BackEnd):
 
         def copy_result():
             copy(self.textvar.get())
-            self.tf_confirm_text.grid(row=0, column=2, padx=4, sticky=NSEW)
+            self.tf_confirm_text.grid(row=0, column=1, padx=4, sticky=NSEW)
             self.tf_confirm_text.after(2000, lambda: self.tf_confirm_text.grid_remove())
 
         self.tf_angle_selection_frame.config(bg=App.light_grey)
         self.tf_asf_text.config(text="Angle: ", bg=App.light_grey, font=('Segoe UI', 14, 'normal'))
-        self.tf_asf_rad_choice.config(text="Radians", selectcolor=App.light_grey, activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), cursor="crosshair", variable=self.angle_unit, value="rad", command=toggle_angle, bg=App.light_grey)
-        self.tf_asf_deg_choice.config(text="Degrees", selectcolor="lime", activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), cursor="crosshair", variable=self.angle_unit, value="deg", command=toggle_angle, bg=App.light_grey)
+        self.tf_asf_rad_choice.config(text="Radians", selectcolor=App.light_grey, activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), variable=self.angle_unit, value="rad", command=toggle_angle, bg=App.light_grey)
+        self.tf_asf_deg_choice.config(text="Degrees", selectcolor="lime", activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), variable=self.angle_unit, value="deg", command=toggle_angle, bg=App.light_grey)
         self.angle_unit.set("deg")
 
     def place_bf_widgets(self):
