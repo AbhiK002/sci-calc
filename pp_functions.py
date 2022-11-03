@@ -4,6 +4,7 @@ import math
 class Functions:
     def __init__(self):
         self.result = 0
+        self.deg_or_rad = 'deg'
 
     def eval_eq(self, equation):
         sin = self.pp_sin
@@ -16,9 +17,9 @@ class Functions:
         abs = self.pp_abs
         ceil = self.pp_ceil
         floor = self.pp_floor
-        asin = math.asin
-        acos = math.acos
-        atan = math.atan
+        asin = self.pp_asin
+        acos = self.pp_acos
+        atan = self.pp_atan
         e = math.e
         pi = math.pi
         equation = equation.replace('π', 'pi')
@@ -31,23 +32,38 @@ class Functions:
     def pp_rad(self, angle):
         return math.radians(angle)
 
+    def pp_deg(self, angle):
+        return math.degrees(angle)
+
     def pp_sin(self, angle):
-        result = math.sin(self.pp_rad(angle))
-        return result
+        if self.deg_or_rad == 'deg':
+            return math.sin(self.pp_rad(angle))
+        return math.sin(angle)
+
+    def pp_asin(self, value):
+        if self.deg_or_rad == 'deg':
+            return self.pp_deg(math.asin(value))
+        return math.asin(value)
 
     def pp_cos(self, angle):
-        result = math.cos(self.pp_rad(angle))
-        return result
+        if self.deg_or_rad == 'deg':
+            return math.cos(self.pp_rad(angle))
+        return math.cos(angle)
+
+    def pp_acos(self, value):
+        if self.deg_or_rad == 'deg':
+            return self.pp_deg(math.acos(value))
+        return math.acos(value)
 
     def pp_tan(self, angle):
-        if angle % 90 == 0:
-            if angle % 180 != 0:
-                return "Infinity"
-            else:
-                return 0.0
+        if self.deg_or_rad == 'deg':
+            return math.tan(self.pp_rad(angle))
+        return math.tan(angle)
 
-        result = math.tan(self.pp_rad(angle))
-        return result
+    def pp_atan(self, value):
+        if self.deg_or_rad == 'deg':
+            return self.pp_deg(math.atan(value))
+        return math.atan(value)
 
     def pp_log(self, value):
         if value == 0:
