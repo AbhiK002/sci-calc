@@ -32,14 +32,14 @@ class BackEnd(Functions):
         self.allow_constants = True
         self.allow_any = True
 
+        self.angle_unit = StringVar()
         self.cursor = 0
         self.display_text = []
-        self.equation_length = 0
         self.textvar = StringVar()
 
     @staticmethod
     def is_num(n):
-        if n.isdecimal() or ('.' in n and n.count('.') == 1 and n.replace('.', '').isdecimal()):
+        if n.isdecimal() or (n.count('.') == 1 and n.replace('.', '').isdecimal()):
             return True
         return False
 
@@ -47,11 +47,26 @@ class BackEnd(Functions):
         for i in char:
             a = len(self.display_text)
             self.display_text.insert(a+self.cursor, i)
-        self.equation_length = len(self.display_text)
 
     def clear_text(self):
         self.display_text.clear()
-        self.equation_length = 0
+        self.allow_operator, self.allow_any, self.allow_constants = False, True, True
+        self.cursor = 0
+
+    def backspace_text(self):
+        curr = len(self.display_text)+self.cursor-1
+        if self.display_text[curr] == '(':
+            self.display_text.pop(curr)
+            self.cursor += 1
+            self.backspace_text()
+            if self.display_text and self.display_text[len(self.display_text)+self.cursor-1] in funcs:
+                self.backspace_text()
+        else:
+            curr = len(self.display_text) + self.cursor - 1
+            if self.is_num(self.display_text[curr]) and len(self.display_text[curr]) > 1:
+                self.display_text[curr] = self.display_text[curr][:-1]
+            else:
+                self.display_text.pop(len(self.display_text)+self.cursor-1)
 
     def send_press(self, button):
         if button in funcs:
@@ -97,10 +112,9 @@ class BackEnd(Functions):
                 self.allow_operator = True
         elif button == 'C':
             self.clear_text()
-            self.allow_operator, self.allow_any, self.allow_constants = False, True, True
-            self.cursor = 0
         elif button == '=':
             print(self.display_text)
+            self.deg_or_rad = self.angle_unit.get()
             b = self.eval_eq(self.textvar.get())
             self.display_text = [str(b)]
             if type(b) is str:
@@ -126,7 +140,22 @@ class BackEnd(Functions):
                 self.cursor -= 1
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, True
         elif button == 'backspace':
-            pass
+            if self.display_text:
+                self.backspace_text()
+            curr = len(self.display_text)+self.cursor-1
+            if not self.display_text:
+                self.clear_text()
+            elif self.is_num(self.display_text[curr]):
+                self.allow_operator, self.allow_any, self.allow_constants = True, True, False
+            elif self.display_text[curr] in ops+'(':
+                self.allow_operator, self.allow_any, self.allow_constants = False, True, True
+            elif self.display_text[curr] in 'πe':
+                self.allow_operator, self.allow_any, self.allow_constants = True, False, False
+        elif button == 'root':
+            if self.allow_operator:
+                self.append_char_1c('^', '(', '1', '/', ')')
+                self.cursor -= 1
+                self.allow_operator, self.allow_any, self.allow_constants = False, True, True
         else:
             self.append_char_1c(button)
             self.allow_operator = True
@@ -164,7 +193,6 @@ class App(BackEnd):
         self.tf_asf_text = Label(self.tf_angle_selection_frame)
         self.tf_asf_rad_choice = Radiobutton(self.tf_angle_selection_frame)
         self.tf_asf_deg_choice = Radiobutton(self.tf_angle_selection_frame)
-        self.angle_unit = StringVar()
 
         self.place_tf_widgets()
         self.config_tf_widgets()
