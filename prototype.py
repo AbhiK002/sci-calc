@@ -130,22 +130,23 @@ class BackEnd(Functions):
         elif button == 'C':
             self.clear_text()
         elif button == '=':
-            print(self.display_text)
-            self.deg_or_rad = self.angle_unit.get()
-            b = self.eval_eq(self.textvar.get())
-            self.display_text = [str(b)]
-            if type(b) is str:
-                self.allow_operator, self.allow_any, self.allow_constants = False, False, False
-                self.cursor = 0
-            else:
-                if b >= 10**10000:
-                    self.display_text = ['Overflow']
-                    self.allow_any, self.allow_constants, self.allow_constants = False, False, False
-                else:
-                    if 10**45 <= b < 10**10000:
-                        self.display_text = [str(self.dec_to_e(b))]
-                    self.allow_operator, self.allow_any, self.allow_constants = True, False, False
+            if self.display_text:
+                print(self.display_text)
+                self.deg_or_rad = self.angle_unit.get()
+                b = self.eval_eq(self.textvar.get())
+                self.display_text = [str(b)]
+                if type(b) is str:
+                    self.allow_operator, self.allow_any, self.allow_constants = False, False, False
                     self.cursor = 0
+                else:
+                    if b >= 10**10000:
+                        self.display_text = ['Overflow']
+                        self.allow_any, self.allow_constants, self.allow_constants = False, False, False
+                    else:
+                        if 10**45 <= b < 10**10000:
+                            self.display_text = [str(self.dec_to_e(b))]
+                        self.allow_operator, self.allow_any, self.allow_constants = True, False, False
+                        self.cursor = 0
         elif button == '.':
             if self.display_text and self.display_text[len(self.display_text)+self.cursor-1].isdecimal():
                 self.display_text[len(self.display_text)+self.cursor-1] += '.'
@@ -301,12 +302,18 @@ class App(BackEnd):
             for j in range(len(buttons[i])):
                 if buttons[i][j]:
                     b = Button(self.bottom_frame, text=buttons[i][j], bg=App.light_grey, borderwidth=3, font=('Segoe UI', 16, 'bold'), command=lambda x=buttons[i][j]: self.send_press(x))
+                    if buttons[i][j].isdecimal() or buttons[i][j] in ('+', '-', '=', '*', '/', '.', '(') and buttons[i][j] != '00':
+                        self.w.bind(f"{buttons[i][j]}", lambda event, a=buttons[i][j]: self.send_press(a))
                     if j > 2 or (i == 0 and 0 < j < 3):
                         b.config(font=('Segoe UI', 22, 'bold'))
                     row.append(b)
                     b.grid(row=i, column=j, sticky=NSEW, padx=4, pady=4)
 
             self.bf_buttons.append(row)
+
+        self.w.bind('<Return>', lambda event, a='=': self.send_press(a))
+        self.w.bind('<BackSpace>', lambda event, a='backspace': self.send_press(a))
+        self.w.bind('<Delete>', lambda event, a='C': self.send_press(a))
 
         self.bf_buttons[2][6].grid(row=2, column=6, rowspan=2)
         self.bf_buttons[4][6].grid(row=4, column=6, columnspan=2)
