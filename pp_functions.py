@@ -29,10 +29,12 @@ class Functions:
         except:
             return "Error"
 
-    def pp_rad(self, angle):
+    @staticmethod
+    def pp_rad(angle):
         return math.radians(angle)
 
-    def pp_deg(self, angle):
+    @staticmethod
+    def pp_deg(angle):
         return math.degrees(angle)
 
     def pp_sin(self, angle):
@@ -65,19 +67,22 @@ class Functions:
             return self.pp_deg(math.atan(value))
         return math.atan(value)
 
-    def pp_log(self, value):
+    @staticmethod
+    def pp_log(value):
         if value == 0:
             return "Invalid Input"
         result = math.log(value, 10)
         return result
 
-    def pp_ln(self, value):
+    @staticmethod
+    def pp_ln(value):
         if value == 0:
             return "Invalid Input"
         result = math.log(value, math.e)
         return result
 
-    def pp_fact(self, value):
+    @staticmethod
+    def pp_fact(value):
         if int(value) < 0:
             return "Invalid Input"
 
@@ -87,32 +92,39 @@ class Functions:
 
         return result
 
-    def pp_numroot(self, a, b):
+    @staticmethod
+    def pp_numroot(a, b):
         result = a ** (1 / b)
         return result
 
-    def pp_sqrt(self, value):
+    @staticmethod
+    def pp_sqrt(value):
         result = value ** (1 / 2)
         return result
 
-    def pp_sqr(self, value):
+    @staticmethod
+    def pp_sqr(value):
         result = value * value
         return result
 
-    def pp_abs(self, value):
+    @staticmethod
+    def pp_abs(value):
         result = abs(value)
         return result
 
-    def pp_ceil(self, value):
+    @staticmethod
+    def pp_ceil(value):
         if value == int(value):
             return int(value)
         result = int(value) + 1
         return result
 
-    def pp_floor(self, value):
+    @staticmethod
+    def pp_floor(value):
         result = int(value)
         return result
 
-    def pp_exp(self, value):
+    @staticmethod
+    def pp_exp(value):
         result = 10 ** value
         return result
