@@ -227,7 +227,7 @@ class App(BackEnd):
 
     def meta_window(self):
         self.w.geometry("640x440")
-        self.w.title("Project 16 - Scientific Calculator")
+        self.w.title("Scientific Calculator")
         self.w.config(bg=App.dark_grey)
         self.w.resizable(False, False)
 
