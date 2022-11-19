@@ -7,7 +7,6 @@ except ModuleNotFoundError:
     system('python -m pip install pyperclip')
 
 
-
 class Functions:
     def __init__(self):
         self.result = 0
@@ -358,7 +357,7 @@ class App(BackEnd):
 
     def meta_window(self):
         self.w.geometry("640x440")
-        self.w.title("Scientific Calculator")
+        self.w.title("SciCalc - Scientific Calculator")
         self.w.config(bg=App.dark_grey)
         self.w.resizable(False, False)
 
@@ -391,8 +390,19 @@ class App(BackEnd):
 
     def config_tf_widgets(self):
         self.tf_buttons.config(bg=App.light_grey, height=32)
-        self.tf_copy_button.config(text="COPY", bg=App.dark_grey, activebackground=App.light_grey, fg="white", font=("Segoe UI", 13, 'bold'), borderwidth=3, command=lambda: copy_result())
-        self.tf_confirm_text.config(text="Copied to Clipboard", bg=App.light_grey, fg="green", font=('Segoe UI', 10))
+        self.tf_copy_button.config(
+            text="COPY",
+            bg=App.dark_grey,
+            activebackground=App.light_grey,
+            fg="white",
+            font=("Segoe UI", 13, 'bold'),
+            borderwidth=3,
+            command=lambda: copy_result())
+        self.tf_confirm_text.config(
+            text="Copied to Clipboard",
+            bg=App.light_grey,
+            fg="green",
+            font=('Segoe UI', 10))
         self.tf_textbox.update()
         self.tf_textbox.config(
             height=2,
@@ -422,9 +432,28 @@ class App(BackEnd):
             self.tf_confirm_text.after(2000, lambda: self.tf_confirm_text.grid_remove())
 
         self.tf_angle_selection_frame.config(bg=App.light_grey)
-        self.tf_asf_text.config(text="Angle: ", bg=App.light_grey, font=('Segoe UI', 14, 'normal'))
-        self.tf_asf_rad_choice.config(text="Radians", selectcolor=App.light_grey, activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), variable=self.angle_unit, value="rad", command=toggle_angle, bg=App.light_grey)
-        self.tf_asf_deg_choice.config(text="Degrees", selectcolor="lime", activebackground=App.light_grey, font=('Segoe UI', 14, 'normal'), variable=self.angle_unit, value="deg", command=toggle_angle, bg=App.light_grey)
+        self.tf_asf_text.config(
+            text="Angle: ",
+            bg=App.light_grey,
+            font=('Segoe UI', 14, 'normal'))
+        self.tf_asf_rad_choice.config(
+            text="Radians",
+            selectcolor=App.light_grey,
+            activebackground=App.light_grey,
+            font=('Segoe UI', 14, 'normal'),
+            variable=self.angle_unit,
+            value="rad",
+            command=toggle_angle,
+            bg=App.light_grey)
+        self.tf_asf_deg_choice.config(
+            text="Degrees",
+            selectcolor="lime",
+            activebackground=App.light_grey,
+            font=('Segoe UI', 14, 'normal'),
+            variable=self.angle_unit,
+            value="deg",
+            command=toggle_angle,
+            bg=App.light_grey)
         self.angle_unit.set("deg")
 
     def place_bf_widgets(self):
@@ -432,7 +461,13 @@ class App(BackEnd):
             row = []
             for j in range(len(buttons[i])):
                 if buttons[i][j]:
-                    b = Button(self.bottom_frame, text=buttons[i][j], bg=App.light_grey, borderwidth=3, font=('Segoe UI', 16, 'bold'), command=lambda x=buttons[i][j]: self.send_press(x))
+                    b = Button(
+                        self.bottom_frame,
+                        text=buttons[i][j],
+                        bg=App.light_grey,
+                        borderwidth=3,
+                        font=('Segoe UI', 16, 'bold'),
+                        command=lambda x=buttons[i][j]: self.send_press(x))
                     if buttons[i][j].isdecimal() or buttons[i][j] in ('+', '-', '=', '*', '/', '.', '(') and buttons[i][j] != '00':
                         self.w.bind(f"{buttons[i][j]}", lambda event, a=buttons[i][j]: self.send_press(a))
                     if j > 2 or (i == 0 and 0 < j < 3):
@@ -461,21 +496,34 @@ class App(BackEnd):
             if not self.inverse_State:
                 for i in range(*inv_rows):
                     if i == 1:
-                        self.bf_buttons[i][2].config(text=inv_buttons[buttons[i][2]], bg=App.light_green, command=lambda x=inv_buttons[buttons[i][2]]: [self.send_press(x), inverse()])
+                        self.bf_buttons[i][2].config(
+                            text=inv_buttons[buttons[i][2]],
+                            bg=App.light_green,
+                            command=lambda x=inv_buttons[buttons[i][2]]: [self.send_press(x), inverse()])
                     for j in range(*inv_cols):
-                        self.bf_buttons[i][j].config(text=inv_buttons[buttons[i][j]], bg=App.light_green, command=lambda x=inv_buttons[buttons[i][j]]: [self.send_press(x), inverse()])
+                        self.bf_buttons[i][j].config(
+                            text=inv_buttons[buttons[i][j]],
+                            bg=App.light_green,
+                            command=lambda x=inv_buttons[buttons[i][j]]: [self.send_press(x), inverse()])
                 self.bf_buttons[0][0].config(bg=App.dark_green, relief=SUNKEN)
                 self.inverse_State = True
             else:
                 for i in range(*inv_rows):
                     if i == 1:
-                        self.bf_buttons[i][2].config(text=buttons[i][2], bg=App.light_grey, command=lambda x=buttons[i][2]: self.send_press(x))
+                        self.bf_buttons[i][2].config(
+                            text=buttons[i][2],
+                            bg=App.light_grey,
+                            command=lambda x=buttons[i][2]: self.send_press(x))
                     for j in range(*inv_cols):
-                        self.bf_buttons[i][j].config(text=buttons[i][j], bg=App.light_grey, command=lambda x=buttons[i][j]: self.send_press(x))
+                        self.bf_buttons[i][j].config(
+                            text=buttons[i][j],
+                            bg=App.light_grey,
+                            command=lambda x=buttons[i][j]: self.send_press(x))
                 self.bf_buttons[0][0].config(bg=App.light_green, relief=RAISED)
                 self.inverse_State = False
 
-        self.bf_buttons[0][0].config(command=lambda x=buttons[0][0]: [print(f"you pressed {x}"), inverse()])
+        self.bf_buttons[0][0].config(
+            command=lambda x=buttons[0][0]: [print(f"you pressed {x}"), inverse()])
 
     def start(self):
         self.w.mainloop()
