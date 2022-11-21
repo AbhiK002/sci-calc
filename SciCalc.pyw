@@ -4,6 +4,7 @@ from tkinter import (
     Label,
     NE,
     NSEW,
+    PhotoImage,
     Radiobutton,
     RAISED,
     RIGHT,
@@ -11,6 +12,7 @@ from tkinter import (
     StringVar,
     SUNKEN,
     Tk,
+    TclError,
     W
 )
 from os import system
