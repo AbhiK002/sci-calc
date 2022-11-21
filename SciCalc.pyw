@@ -1,6 +1,21 @@
-from tkinter import *
+from tkinter import (
+    Button,
+    Frame,
+    Label,
+    NE,
+    NSEW,
+    Radiobutton,
+    RAISED,
+    RIGHT,
+    SOLID,
+    StringVar,
+    SUNKEN,
+    Tk,
+    W
+)
 from os import system
 import math
+
 try:
     from pyperclip import copy
 except ModuleNotFoundError:
@@ -177,21 +192,21 @@ class BackEnd(Functions):
     def dec_to_e(n):
         b = int(n)
         if len(str(b)) > 1:
-            c = n/(10**(len(str(b))-1))
-            return f"{c}E{len(str(b))-1}"
+            c = n / (10 ** (len(str(b)) - 1))
+            return f"{c}E{len(str(b)) - 1}"
         return n
 
     def count_ops(self, l):
         count = 0
         for i in l:
-            if i in ops+funcs:
+            if i in ops + funcs:
                 count += 1
         return count
 
     def append_char_1c(self, *char):
         for i in char:
             a = len(self.display_text)
-            self.display_text.insert(a+self.cursor, i)
+            self.display_text.insert(a + self.cursor, i)
 
     def clear_text(self):
         self.display_text.clear()
@@ -199,22 +214,22 @@ class BackEnd(Functions):
         self.cursor = 0
 
     def backspace_text(self):
-        curr = len(self.display_text)+self.cursor-1
+        curr = len(self.display_text) + self.cursor - 1
         if self.display_text[curr] == '(':
             self.display_text.pop(curr)
             self.cursor += 1
             self.backspace_text()
-            if self.display_text and self.display_text[len(self.display_text)+self.cursor-1] in funcs:
+            if self.display_text and self.display_text[len(self.display_text) + self.cursor - 1] in funcs:
                 self.backspace_text()
         else:
             curr = len(self.display_text) + self.cursor - 1
             if self.is_num(self.display_text[curr]) and len(self.display_text[curr]) > 1:
                 self.display_text[curr] = self.display_text[curr][:-1]
             else:
-                self.display_text.pop(len(self.display_text)+self.cursor-1)
+                self.display_text.pop(len(self.display_text) + self.cursor - 1)
 
     def send_press(self, button):
-        if button in ops+funcs and self.count_ops(self.display_text) > 14:
+        if button in ops + funcs and self.count_ops(self.display_text) > 14:
             return 0
         if button in funcs:
             if not self.allow_operator and self.allow_any:
@@ -225,7 +240,7 @@ class BackEnd(Functions):
                 self.append_char_1c('^')
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, True
         elif button == 'exp':
-            if self.allow_operator and self.display_text[len(self.display_text)+self.cursor-1]!='e':
+            if self.allow_operator and self.display_text[len(self.display_text) + self.cursor - 1] != 'e':
                 self.append_char_1c('E')
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, False
         elif button in ops:
@@ -236,7 +251,7 @@ class BackEnd(Functions):
                     self.append_char_1c(button)
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, True
             else:
-                if button == '-' and ((self.display_text and self.display_text[len(self.display_text)+self.cursor-1] != '-') or (not self.display_text)):
+                if button == '-' and ((self.display_text and self.display_text[len(self.display_text) + self.cursor - 1] != '-') or (not self.display_text)):
                     self.append_char_1c('-')
                     self.allow_operator, self.allow_any, self.allow_constants = False, True, True
         elif button in ('e', 'pi'):
@@ -251,10 +266,10 @@ class BackEnd(Functions):
                 if not self.display_text:
                     self.append_char_1c(button)
                 else:
-                    if not self.is_num(self.display_text[len(self.display_text)+self.cursor-1]):
+                    if not self.is_num(self.display_text[len(self.display_text) + self.cursor - 1]):
                         self.append_char_1c(button)
                     else:
-                        self.display_text[len(self.display_text)+self.cursor-1] = self.display_text[len(self.display_text)+self.cursor-1] + str(button)
+                        self.display_text[len(self.display_text) + self.cursor - 1] = self.display_text[len(self.display_text) + self.cursor - 1] + str(button)
                 self.allow_constants = False
                 self.allow_operator = True
         elif button == 'C':
@@ -269,17 +284,17 @@ class BackEnd(Functions):
                     self.allow_operator, self.allow_any, self.allow_constants = False, False, False
                     self.cursor = 0
                 else:
-                    if b >= 10**10000:
+                    if b >= 10 ** 10000:
                         self.display_text = ['Overflow']
                         self.allow_any, self.allow_constants, self.allow_constants = False, False, False
                     else:
-                        if 10**45 <= b < 10**10000:
+                        if 10 ** 45 <= b < 10 ** 10000:
                             self.display_text = [str(self.dec_to_e(b))]
                         self.allow_operator, self.allow_any, self.allow_constants = True, False, False
                         self.cursor = 0
         elif button == '.':
-            if self.display_text and self.display_text[len(self.display_text)+self.cursor-1].isdecimal():
-                self.display_text[len(self.display_text)+self.cursor-1] += '.'
+            if self.display_text and self.display_text[len(self.display_text) + self.cursor - 1].isdecimal():
+                self.display_text[len(self.display_text) + self.cursor - 1] += '.'
         elif button in ['10^x', 'e^x']:
             if not self.allow_operator and self.allow_any:
                 self.append_char_1c(button.split('^')[0], '^')
@@ -296,12 +311,12 @@ class BackEnd(Functions):
         elif button == 'backspace':
             if self.display_text:
                 self.backspace_text()
-            curr = len(self.display_text)+self.cursor-1
+            curr = len(self.display_text) + self.cursor - 1
             if not self.display_text:
                 self.clear_text()
             elif self.is_num(self.display_text[curr]):
                 self.allow_operator, self.allow_any, self.allow_constants = True, True, False
-            elif self.display_text[curr] in ops+['(']:
+            elif self.display_text[curr] in ops + ['(']:
                 self.allow_operator, self.allow_any, self.allow_constants = False, True, True
             elif self.display_text[curr] in 'πe':
                 self.allow_operator, self.allow_any, self.allow_constants = True, False, False
@@ -359,6 +374,10 @@ class App(BackEnd):
         self.w.geometry("640x440")
         self.w.title("SciCalc - Scientific Calculator")
         self.w.config(bg=App.dark_grey)
+        try:
+            self.w.iconphoto(True, PhotoImage(file="scicalclogo.png"))
+        except TclError:
+            pass
         self.w.resizable(False, False)
 
         self.w.columnconfigure(0, weight=1)
@@ -411,7 +430,7 @@ class App(BackEnd):
             bg="white",
             borderwidth=2,
             relief=SOLID,
-            wraplength=self.tf_textbox.winfo_width()-6,
+            wraplength=self.tf_textbox.winfo_width() - 6,
             justify=RIGHT,
             anchor=NE
         )
