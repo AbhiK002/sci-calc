@@ -1,3 +1,4 @@
+from pyperclip import copy
 from tkinter import (
     Button,
     Frame,
@@ -17,11 +18,6 @@ from tkinter import (
 )
 from os import system
 import math
-
-try:
-    from pyperclip import copy
-except ModuleNotFoundError:
-    system('python -m pip install pyperclip')
 
 
 class Functions:
@@ -489,7 +485,7 @@ class App(BackEnd):
                         borderwidth=3,
                         font=('Segoe UI', 16, 'bold'),
                         command=lambda x=buttons[i][j]: self.send_press(x))
-                    if buttons[i][j].isdecimal() or buttons[i][j] in ('+', '-', '=', '*', '/', '.', '(') and buttons[i][j] != '00':
+                    if (buttons[i][j].isdecimal() and buttons[i][j] != '00') or buttons[i][j] in ('+', '-', '=', '*', '/', '.', '('):
                         self.w.bind(f"{buttons[i][j]}", lambda event, a=buttons[i][j]: self.send_press(a))
                     if j > 2 or (i == 0 and 0 < j < 3):
                         b.config(font=('Segoe UI', 22, 'bold'))
