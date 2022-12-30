@@ -1,4 +1,3 @@
-from pyperclip import copy
 from tkinter import (
     Button,
     Frame,
@@ -444,7 +443,11 @@ class App(BackEnd):
                 self.tf_asf_rad_choice.config(selectcolor="lime")
 
         def copy_result():
-            copy(self.textvar.get())
+            text = self.textvar.get()
+            self.w.clipboard_clear()
+            self.w.clipboard_append(text)
+            self.w.update()
+            
             self.tf_confirm_text.grid(row=0, column=1, padx=4, sticky=NSEW)
             self.tf_confirm_text.after(2000, lambda: self.tf_confirm_text.grid_remove())
 
