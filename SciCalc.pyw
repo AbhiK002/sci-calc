@@ -15,8 +15,18 @@ from tkinter import (
     TclError,
     W
 )
-from os import system
+import os
+import sys
 import math
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except Exception:
+        base_path = os.path.abspath(".")
+
+    return os.path.join(base_path, relative_path)
 
 
 class Functions:
@@ -372,7 +382,7 @@ class App(BackEnd):
         self.w.title("SciCalc - Scientific Calculator")
         self.w.config(bg=App.dark_grey)
         try:
-            self.w.iconphoto(True, PhotoImage(file="scicalclogo.png"))
+            self.w.iconphoto(True, PhotoImage(file=resource_path("scicalclogo.png")))
         except TclError:
             pass
         self.w.resizable(False, False)
@@ -447,7 +457,7 @@ class App(BackEnd):
             self.w.clipboard_clear()
             self.w.clipboard_append(text)
             self.w.update()
-            
+
             self.tf_confirm_text.grid(row=0, column=1, padx=4, sticky=NSEW)
             self.tf_confirm_text.after(2000, lambda: self.tf_confirm_text.grid_remove())
 
